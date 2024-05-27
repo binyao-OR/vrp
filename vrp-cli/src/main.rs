@@ -1,6 +1,15 @@
 //! A command line interface to *Vehicle Routing Problem* solver.
 //!
 
+use std::fs::File;
+use std::io::BufReader;
+use std::io::prelude::*;
+use std::sync::Arc;
+use vrp_cli::extensions::solve::config::read_config;
+use vrp_cli::get_solution_serialized;
+use vrp_core::prelude::GenericError;
+use vrp_pragmatic::format::problem::PragmaticProblem;
+
 #[cfg(test)]
 #[path = "../tests/unit/main_test.rs"]
 mod main_test;
@@ -9,7 +18,31 @@ mod main_test;
 mod commands;
 
 fn main() {
-    cli::run_app()
+    let mut problem_file = File::open("/Users/yaobin/Downloads/problem.csv").unwrap();
+    let mut config_file = File::open("/Users/yaobin/Downloads/config.csv").unwrap();
+    let mut matrix_file = File::open("/Users/yaobin/Downloads/matrix.csv").unwrap();
+
+    let mut problem = String::new();
+    let mut config = String::new();
+    let mut matrix1 = String::new();
+
+    problem_file.read_to_string(&mut problem).unwrap();
+    config_file.read_to_string(&mut config).unwrap();
+    matrix_file.read_to_string(&mut matrix1).unwrap();
+
+    let mut matrices = vec![];
+    matrices.push(matrix1);
+
+    let result =
+        if matrices.is_empty() { problem.read_pragmatic() } else { (problem, matrices).read_pragmatic() }
+            .map_err(|errs| errs.into())
+            .and_then(|problem| {
+                read_config(BufReader::new(config.as_bytes()))
+                    .map(|config| (problem, config))
+            })
+            .and_then(|(problem, config)| get_solution_serialized(Arc::new(problem), config)).unwrap();
+
+    println!("result is: {}", result);
 }
 
 #[cfg(not(target_arch = "wasm32"))]
