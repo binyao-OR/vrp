@@ -86,6 +86,14 @@ pub(super) fn create_goal_context(
         )?);
     }
 
+    if props.has_tour_location_size_limits {
+        features.push(create_location_limit_feature(
+            "location_limit",
+            LOCATION_SIZE_CONSTRAINT_CODE,
+            Arc::new(|actor| actor.vehicle.dimens.get_tour_location_size()),
+        )?);
+    }
+
     let goal = Goal::no_alternatives(global_objective_map, local_objective_map);
 
     GoalContext::new(features.as_slice(), goal)

@@ -160,6 +160,8 @@ fn get_problem_properties(api_problem: &ApiProblem, matrices: &[Matrix]) -> Prob
     let has_compatibility = api_problem.plan.jobs.iter().any(|job| job.compatibility.is_some());
     let has_tour_size_limits =
         api_problem.fleet.vehicles.iter().any(|v| v.limits.as_ref().map_or(false, |l| l.tour_size.is_some()));
+    let has_tour_location_size_limits =
+        api_problem.fleet.vehicles.iter().any(|v| v.limits.as_ref().map_or(false, |l| l.tour_location_size.is_some()));
 
     let has_tour_travel_limits = api_problem
         .fleet
@@ -179,6 +181,7 @@ fn get_problem_properties(api_problem: &ApiProblem, matrices: &[Matrix]) -> Prob
         has_value,
         has_compatibility,
         has_tour_size_limits,
+        has_tour_location_size_limits,
         has_tour_travel_limits,
     }
 }

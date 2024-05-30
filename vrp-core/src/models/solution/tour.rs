@@ -18,11 +18,13 @@ use std::slice::{Iter, IterMut};
 /// A tour leg.
 pub type Leg<'a> = (&'a [Activity], usize);
 
+pub type Location = usize;
+
 /// Represents a tour, a smart container for jobs with their associated activities.
 #[derive(Default)]
 pub struct Tour {
     /// Stores activities in the order the performed.
-    activities: Vec<Activity>,
+    pub(crate) activities: Vec<Activity>,
 
     /// Stores jobs in the order of their activities added.
     jobs: HashSet<Job, BuildHasherDefault<FxHasher>>,
@@ -193,6 +195,24 @@ impl Tour {
         } else {
             self.activities.len() - (if self.is_closed { 2 } else { 1 })
         }
+    }
+
+    /// Returns total amount of places.
+    pub fn place_count(&self) -> usize {
+        let mut unique_places = HashSet::new();
+        for activity in &self.activities {
+            unique_places.insert(&activity.place.idx);
+        }
+        unique_places.len()
+    }
+
+    /// Returns a set of unique places visited in the tour.
+    pub fn get_unique_places(&self) -> HashSet<&Location> {
+        let mut unique_places = HashSet::new();
+        for activity in &self.activities {
+            unique_places.insert(&activity.place.location);
+        }
+        unique_places
     }
 
     /// Returns amount of all activities in tour.

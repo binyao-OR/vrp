@@ -108,6 +108,7 @@ pub(super) fn read_fleet(api_problem: &ApiProblem, props: &ProblemProperties, co
         let profile = Profile::new(index, vehicle.profile.scale);
 
         let tour_size = vehicle.limits.as_ref().and_then(|l| l.tour_size);
+        let tour_location_size = vehicle.limits.as_ref().and_then(|l| l.tour_location_size);
 
         for (shift_index, shift) in vehicle.shifts.iter().enumerate() {
             let start = {
@@ -144,6 +145,10 @@ pub(super) fn read_fleet(api_problem: &ApiProblem, props: &ProblemProperties, co
 
                 if let Some(tour_size) = tour_size {
                     dimens.set_tour_size(tour_size);
+                }
+
+                if let Some(tour_location_size) = tour_location_size {
+                    dimens.set_tour_location_size(tour_location_size);
                 }
 
                 if props.has_multi_dimen_capacity {

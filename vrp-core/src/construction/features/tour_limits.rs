@@ -4,6 +4,7 @@
 #[path = "../../../tests/unit/construction/features/tour_limits_test.rs"]
 mod tour_limits_test;
 
+use hashbrown::HashSet;
 use super::*;
 use crate::construction::enablers::{calculate_travel_delta, ScheduleKeys};
 use crate::models::common::{Distance, Duration};
@@ -37,6 +38,19 @@ pub fn create_activity_limit_feature(
     FeatureBuilder::default()
         .with_name(name)
         .with_constraint(ActivityLimitConstraint { code, limit_fn: limit_func })
+        .build()
+}
+
+/// Creates a limit for location amount in a tour.
+/// This is a hard constraint.
+pub fn create_location_limit_feature(
+    name: &str,
+    code: ViolationCode,
+    limit_func: ActivitySizeResolver,
+) -> Result<Feature, GenericError> {
+    FeatureBuilder::default()
+        .with_name(name)
+        .with_constraint(LocationLimitConstraint { code, limit_fn: limit_func })
         .build()
 }
 
@@ -81,6 +95,67 @@ impl FeatureConstraint for ActivityLimitConstraint {
                     };
 
                     if tour_activities + job_activities > limit {
+                        ConstraintViolation::fail(self.code)
+                    } else {
+                        ConstraintViolation::success()
+                    }
+                })
+            }
+            MoveContext::Activity { .. } => ConstraintViolation::success(),
+        }
+    }
+
+    fn merge(&self, source: Job, _: Job) -> Result<Job, ViolationCode> {
+        Ok(source)
+    }
+}
+
+struct LocationLimitConstraint {
+    code: ViolationCode,
+    limit_fn: ActivitySizeResolver,
+}
+
+impl FeatureConstraint for crate::construction::features::tour_limits::LocationLimitConstraint {
+    fn evaluate(&self, move_ctx: &MoveContext<'_>) -> Option<ConstraintViolation> {
+        match move_ctx {
+            MoveContext::Route { route_ctx, job, .. } => {
+                (self.limit_fn)(route_ctx.route().actor.as_ref()).and_then(|limit| {
+
+                    let tour_place_set = {
+                        let mut unique_places = HashSet::new();
+                        for activity in &route_ctx.route().tour.activities {
+                            unique_places.insert(activity.place.location);
+                        }
+                        unique_places
+                    };
+
+                    let job_place_set_option = match job {
+                        Job::Single(single) => {
+                            let mut unique_places = HashSet::new();
+                            for place in &single.places {
+                                unique_places.insert(place.location);
+                            }
+                            unique_places
+                        },
+                        Job::Multi(multi) => {
+                            let mut unique_places = HashSet::new();
+                            for single in &multi.jobs {
+                                for place in &single.places {
+                                    unique_places.insert(place.location);
+                                }
+                            }
+                            unique_places
+                        },
+                    };
+
+                    let job_place_set: HashSet<Location> = job_place_set_option.iter()
+                        .chain(job_place_set_option.iter())
+                        .filter_map(|x| *x)
+                        .collect();
+
+                    let total_unique_places: HashSet<_> = tour_place_set.union(&job_place_set).collect();
+
+                    if total_unique_places.len() > limit {
                         ConstraintViolation::fail(self.code)
                     } else {
                         ConstraintViolation::success()

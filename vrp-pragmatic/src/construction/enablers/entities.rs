@@ -30,6 +30,11 @@ pub trait VehicleTie {
     fn get_tour_size(&self) -> Option<usize>;
     /// Sets vehicle's tour size.
     fn set_tour_size(&mut self, tour_size: usize) -> &mut Self;
+
+    /// Gets vehicle's tour location size.
+    fn get_tour_location_size(&self) -> Option<usize>;
+    /// Sets vehicle's tour location size.
+    fn set_tour_location_size(&mut self, tour_size: usize) -> &mut Self;
 }
 
 impl VehicleTie for Dimensions {
@@ -77,6 +82,15 @@ impl VehicleTie for Dimensions {
 
     fn set_tour_size(&mut self, tour_size: usize) -> &mut Self {
         self.set_value("tour_size", tour_size);
+        self
+    }
+
+    fn get_tour_location_size(&self) -> Option<usize> {
+        self.get_value("tour_size").cloned()
+    }
+
+    fn set_tour_location_size(&mut self, tour_location_size: usize) -> &mut Self {
+        self.set_value("tour_location_size", tour_location_size);
         self
     }
 }

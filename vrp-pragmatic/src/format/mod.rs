@@ -188,6 +188,7 @@ const GROUP_CONSTRAINT_CODE: i32 = 12;
 const COMPATIBILITY_CONSTRAINT_CODE: i32 = 13;
 const RELOAD_RESOURCE_CONSTRAINT_CODE: i32 = 14;
 const RECHARGE_CONSTRAINT_CODE: i32 = 15;
+const LOCATION_SIZE_CONSTRAINT_CODE: i32 = 16;
 
 /// An job id to job index.
 pub type JobIndex = HashMap<String, CoreJob>;

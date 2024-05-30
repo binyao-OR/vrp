@@ -356,6 +356,11 @@ pub struct VehicleLimits {
     /// No job activities restrictions when omitted.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tour_size: Option<usize>,
+
+    /// Max amount location visited.
+    /// No location restrictions when omitted.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub tour_location_size: Option<usize>,
 }
 
 /// Vehicle optional break time variant.
