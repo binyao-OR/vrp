@@ -115,7 +115,7 @@ struct LocationLimitConstraint {
     limit_fn: ActivitySizeResolver,
 }
 
-impl FeatureConstraint for crate::construction::features::tour_limits::LocationLimitConstraint {
+impl FeatureConstraint for LocationLimitConstraint {
     fn evaluate(&self, move_ctx: &MoveContext<'_>) -> Option<ConstraintViolation> {
         match move_ctx {
             MoveContext::Route { route_ctx, job, .. } => {
@@ -155,7 +155,7 @@ impl FeatureConstraint for crate::construction::features::tour_limits::LocationL
 
                     let total_unique_places: HashSet<_> = tour_place_set.union(&job_place_set).collect();
 
-                    if total_unique_places.len() > limit {
+                    if total_unique_places.len() > limit + 1 {
                         ConstraintViolation::fail(self.code)
                     } else {
                         ConstraintViolation::success()

@@ -7,7 +7,6 @@ use std::io::prelude::*;
 use std::sync::Arc;
 use vrp_cli::extensions::solve::config::read_config;
 use vrp_cli::get_solution_serialized;
-use vrp_core::prelude::GenericError;
 use vrp_pragmatic::format::problem::PragmaticProblem;
 
 #[cfg(test)]
@@ -18,7 +17,7 @@ mod main_test;
 mod commands;
 
 fn main() {
-    let mut problem_file = File::open("/Users/yaobin/Downloads/problem.csv").unwrap();
+    let mut problem_file = File::open("/Users/yaobin/Downloads/problem42.csv").unwrap();
     let mut config_file = File::open("/Users/yaobin/Downloads/config.csv").unwrap();
     let mut matrix_file = File::open("/Users/yaobin/Downloads/matrix.csv").unwrap();
 

@@ -86,7 +86,7 @@ impl VehicleTie for Dimensions {
     }
 
     fn get_tour_location_size(&self) -> Option<usize> {
-        self.get_value("tour_size").cloned()
+        self.get_value("tour_location_size").cloned()
     }
 
     fn set_tour_location_size(&mut self, tour_location_size: usize) -> &mut Self {
