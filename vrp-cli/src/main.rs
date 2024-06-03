@@ -17,7 +17,8 @@ mod main_test;
 mod commands;
 
 fn main() {
-    let mut problem_file = File::open("/Users/yaobin/Downloads/problem42.csv").unwrap();
+    // 算例在同目录的example文件夹里
+    let mut problem_file = File::open("/Users/yaobin/Downloads/problem_location_limit_3.csv").unwrap();
     let mut config_file = File::open("/Users/yaobin/Downloads/config.csv").unwrap();
     let mut matrix_file = File::open("/Users/yaobin/Downloads/matrix.csv").unwrap();
 

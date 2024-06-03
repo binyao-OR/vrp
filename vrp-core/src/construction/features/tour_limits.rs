@@ -155,7 +155,7 @@ impl FeatureConstraint for LocationLimitConstraint {
 
                     let total_unique_places: HashSet<_> = tour_place_set.union(&job_place_set).collect();
 
-                    if total_unique_places.len() > limit + 1 {
+                    if total_unique_places.len() > limit + 1 { // 去掉起点
                         ConstraintViolation::fail(self.code)
                     } else {
                         ConstraintViolation::success()
